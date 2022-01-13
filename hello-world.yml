@@ -5,6 +5,12 @@ resource_types:
       repository: coredeps/depwatcher
 
 resources:
+  - name: depwatcher-config
+    type: git
+    source:
+      uri: https://github.com/brayanhenao/concourse-depwatcher-golang.git
+      branch: main
+
   - name: source-appdynamic-latest
     type: depwatcher
     check_every: 1h
@@ -17,9 +23,10 @@ jobs:
     serial: true
     public: true
     plan:
+      - get: depwatcher-config
       - get: source
         resource: source-appdynamic-latest
         trigger: true
         version: every
       - task: create-tracker-story
-        file: tasks/create-new-version-story/create.yml
+        file: depwatcher-config/tasks/create-new-version-story/create.yml
